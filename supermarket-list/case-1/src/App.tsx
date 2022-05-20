@@ -2,6 +2,7 @@ import type {Item} from "./types";
 
 import {useEffect, useState} from "react";
 
+import {Loading} from "./components/Loading";
 import styles from "./App.module.scss";
 import api from "./api";
 
@@ -19,7 +20,14 @@ function App() {
   }
 
   function handleAdd(event: React.ChangeEvent<Form>) {
-    // Should implement
+    event.preventDefault();
+
+    setItems([
+      ...items,
+      {id: items[items.length - 1]?.id + 1 ?? 1, text: event.target.text.value, completed: false},
+    ]);
+
+    event.target.text.value = "";
   }
 
   function handleRemove(id: Item["id"]) {
@@ -38,15 +46,19 @@ function App() {
         <button>Add</button>
       </form>
       <ul>
-        {items?.map((item) => (
-          <li
-            key={item.id}
-            className={item.completed ? styles.completed : ""}
-            onClick={() => handleToggle(item.id)}
-          >
-            {item.text} <button onClick={() => handleRemove(item.id)}>[X]</button>
-          </li>
-        ))}
+        {items.length > 0 ? (
+          items?.map((item) => (
+            <li
+              key={item.id}
+              className={item.completed ? styles.completed : ""}
+              onClick={() => handleToggle(item.id)}
+            >
+              {item.text} <button onClick={() => handleRemove(item.id)}>[X]</button>
+            </li>
+          ))
+        ) : (
+          <Loading />
+        )}
       </ul>
     </main>
   );
